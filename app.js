@@ -9,7 +9,7 @@ GAME RULES:
 
 */
 
-var scores, roundScore, activePlayer;
+var scores, roundScore, activePlayer, gameActive;
 
 
 init();
@@ -18,38 +18,39 @@ var diceDOM = document.querySelector('.dice');
 
 document.querySelector('.btn-roll').addEventListener('click', function() {
 
-    var dice = Math.floor(Math.random() * 6) + 1;
+    if(gameActive) {
+        
+        var dice = Math.floor(Math.random() * 6) + 1;
 
-    diceDOM.style.display = 'block';
-    diceDOM.src = 'dice-' + dice + '.png';
+        diceDOM.style.display = 'block';
+        diceDOM.src = 'dice-' + dice + '.png';
 
-    if(dice !== 1) {
-
-        roundScore += dice;
-        document.getElementById('current-' + activePlayer).textContent = roundScore;
+        if(dice !== 1) {
+            roundScore += dice;
+            document.getElementById('current-' + activePlayer).textContent = roundScore;
+        }
+        else {
+            nextPlayer();
+        }
     }
-    else {
-        nextPlayer();
-    }
-
 });
 
 document.getElementsByClassName('btn-hold')[0].addEventListener('click', function() {
-    
-    scores[activePlayer] += roundScore;
-    document.getElementById('score-' + activePlayer).textContent = scores[activePlayer];
+    if(gameActive) {
+        scores[activePlayer] += roundScore;
+        document.getElementById('score-' + activePlayer).textContent = scores[activePlayer];
 
     if(scores[activePlayer] >= 10) {
        document.getElementById('name-' + activePlayer).textContent = 'WINNER!';
        diceDOM.style.display = 'none';
        document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
        document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
+       gameActive = false;
     }
     else {
         nextPlayer();
     }
-
-    
+    }    
 });
 
 document.querySelector('.btn-new').addEventListener('click', init);
@@ -69,6 +70,7 @@ function nextPlayer() {
 
 function init() {
 
+gameActive = true;
 scores = [0, 0];
 roundScore = 0;
 activePlayer = 0;
